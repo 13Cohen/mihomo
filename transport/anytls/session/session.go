@@ -376,9 +376,10 @@ func (s *Session) writeDataFrame(sid uint32, data []byte) (int, error) {
 	binary.BigEndian.PutUint32(buffer.Extend(4), sid)
 	binary.BigEndian.PutUint16(buffer.Extend(2), uint16(dataLen))
 	buffer.Write(data)
-	_, err := s.writeConn(buffer.Bytes())
+	_, err := s.writeConn(buffer.Bytes(), 60*time.Second)
 	buffer.Release()
 	if err != nil {
+		s.Close()
 		return 0, err
 	}
 
@@ -394,21 +395,17 @@ func (s *Session) writeControlFrame(frame frame) (int, error) {
 	binary.BigEndian.PutUint16(buffer.Extend(2), uint16(dataLen))
 	buffer.Write(frame.data)
 
-	s.conn.SetWriteDeadline(time.Now().Add(time.Second * 5))
-
-	_, err := s.writeConn(buffer.Bytes())
+	_, err := s.writeConn(buffer.Bytes(), 5*time.Second)
 	buffer.Release()
 	if err != nil {
 		s.Close()
 		return 0, err
 	}
 
-	s.conn.SetWriteDeadline(time.Time{})
-
 	return dataLen, nil
 }
 
-func (s *Session) writeConn(b []byte) (n int, err error) {
+func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err error) {
 	s.connLock.Lock()
 	defer s.connLock.Unlock()
 
@@ -419,6 +416,12 @@ func (s *Session) writeConn(b []byte) (n int, err error) {
 		b = append(s.buffer, b...)
 		s.buffer = nil
 	}
+
+	// A queued control frame must not alter another writer's deadline.
+	// DATA has its own bounded write budget, so waiting for connLock cannot
+	// leave a permanently blocked DATA write without a timeout.
+	s.conn.SetWriteDeadline(time.Now().Add(writeTimeout))
+	defer s.conn.SetWriteDeadline(time.Time{})
 
 	// calulate & send padding
 	if s.sendPadding {
