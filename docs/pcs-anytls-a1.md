@@ -8,6 +8,7 @@ Status: source experiment only. No production binary deployment.
 - Independently maintained source: https://github.com/13Cohen/mihomo
 - Baseline: v1.19.17, `a001b1b11008ba469442e5e59b058dd032263470`, the deployed source revision.
 - Candidate implementation: `e8b73c2447c365bd8c992c0d1c66b8ecf279f2d3`, directly based on that baseline.
+- Independent stream error race fix: `6562f69`, layered after the A1 tests and separately cherry-pickable.
 - Experiment branch: `pcs/control-deadline-experiment`. Default `Meta` is unchanged.
 - The user repository is a public independent mirror, not a GitHub fork-network member. Its v1.19.17 tag exactly matches upstream, and the baseline is an ancestor of its Meta branch. This experiment does not rebase onto current Meta.
 - The baseline workflows trigger builds/releases only for Alpha or version tags (or manual dispatch). Pushing this experiment branch does not trigger those workflows.
@@ -34,9 +35,16 @@ All TLS fixtures use real loopback TCP, the same uTLS server dependency as the p
 | Blocked DATA, queued control, eight concurrent Session.Close calls | Pass | Pass; writers and Close finish within the test bound |
 | Partial DATA frame write error | Session incorrectly remains open | Session closes and cannot be reused |
 | Real TCP/TLS peer never consumes application records | Not run as a comparable finite DATA policy does not exist | Pass: actual 60 s write timeout plus bounded TLS close, 65.007 s total |
-| Concurrent exported Stream.Write and Stream.Close | Race detected at stream.go:56 read vs :87 write | Same existing race detected; A1 not yet fully accepted |
+| Concurrent exported Stream.Write and Stream.Close | Race detected at stream.go:56 read vs :87 write | Same existing race on e8b73c2; passes after independent fix 6562f69 |
+| Local/public/remote stream error publication, exact retained error, concurrent close reasons | All three publication subcases report the existing race | Dedicated cases and 20 repeated rounds pass with 6562f69 |
 
-The first candidate package run passed in 30.956 seconds, excluding cold compilation. The baseline comparative subset intentionally failed in 20.118 seconds on the four TLS deadline cases and the partial-DATA close assertion. Ordinary full-frame and Session.Close tests passed on both. The opt-in real-time deadline plus exported stream cancellation run passed in 65.029 seconds.
+The first candidate package run passed in 30.956 seconds, excluding cold compilation. The baseline comparative subset intentionally failed in 20.118 seconds on the four TLS deadline cases and the partial-DATA close assertion. Ordinary full-frame and Session.Close tests passed on both. The opt-in real-time deadline plus exported stream cancellation run passed in 65.029 seconds. After the independent stream error fix, the entire session package passed under `-race` in 32.152 seconds (the separately tested opt-in 65-second fixture was skipped). Exported API close, error publication and concurrent close-reason cases repeated 20 times under `-race` passed in 1.430 seconds. Those timings exclude compilation and are not performance comparisons.
+
+## Independent close-error race fix
+
+`Stream` implements `net.Conn`, allowing concurrent method calls. The original `sync.Once` prevents two closers from updating the state simultaneously, but does not synchronize `Write` reading `dieErr` with either close path writing it. The same race reproduces on baseline a001b1b and deadline-only e8b73c2. Dedicated local, public and remote-error closure cases also all fail under the baseline race detector.
+
+Commit `6562f69` makes the winning close atomically publish one immutable error holder before closing the pipe. Read, Write and repeated Close load that state; exact error identity and first-close-wins behavior are retained. It does not add a lock around I/O or alter FIN ordering, per-stream cancellation or timeout policy. The standalone `stream_close_test.go` is independent of the A1 fixture, so this fix and its regression can be considered separately from the experimental 60-second policy. The dedicated test checks all three closure sources, error propagation to concurrent readers and subsequent writes/close, 24 competing close requests, and one close hook invocation. The hook is installed before the stream is exposed in this fixture; it does not validate dynamic client-pool hook publication.
 
 ## Reproduction
 
@@ -52,10 +60,10 @@ The real-time test is explicitly opt-in because it deliberately waits about 65 s
 
 ## Remaining acceptance gates
 
-1. Fix and revalidate the pre-existing stream close-error race. The exported Stream implements net.Conn, whose methods may be called concurrently. sync.Once serializes the two close paths but does not synchronize the unsafely read dieErr field in Write. Identical -race tests fail on baseline and candidate; the internal Session lock, frame and cancellation cases do not report a race in this run.
-2. End-to-end listener/client authentication and failure paths, negotiated padding behavior, client/session reuse and Shadowrocket interoperability. These package tests use real TLS but do not cover complete client authentication or the deployed client.
-3. Choose a reviewed DATA timeout policy. Assess very low rates, cancellation, per-stream deadlines, queued-control latency and memory/goroutine cleanup. A 60-second whole-write budget does not by itself guarantee acceptable latency or fairness.
-4. Only then build a pinned candidate for an isolated protocol test. Production canary, if authorized in a later stage, must preserve authentication/TLS/padding and have an exact rollback image.
+1. The covered stream error race now passes with 6562f69, but the full client/session lifecycle remains a separate acceptance gate. Race detection only covers executed paths; it is not proof that the whole implementation is race-free.
+2. End-to-end listener/client authentication and failure paths, negotiated padding behavior, client/session reuse and Shadowrocket interoperability. These package tests use real TLS but do not cover complete client authentication or the deployed client. Static review also found client.go assigning stream.dieHook after OpenStream has published the stream; concurrent Session.Close or remote FIN may race with that hook publication or lose a pool-return notification. This client-pool hypothesis still needs a focused reproduction and is not changed by the close-error fix. Passing the covered race fixtures must not be described as proof that all session/client code is race-free.
+3. Choose a reviewed DATA timeout policy. Assess very low rates, cancellation, per-stream deadlines, queued-control latency and memory/goroutine cleanup. A 60-second whole-write budget does not by itself guarantee acceptable latency or fairness. Existing Stream.SetWriteDeadline is only checked at Write entry; it does not interrupt an in-flight frame write. Stream.Close still queues its FIN behind an active DATA write. The Session.Close cancellation fixture proves session-level cancellation only; it does not establish either stronger stream-level guarantee. This experiment deliberately does not alter those separate ordering semantics.
+4. Only then build a pinned candidate for an isolated protocol test. Production canary, after these acceptance gates pass, must preserve authentication/TLS/padding and have an exact rollback image.
 5. Production acceptance needs matched traffic windows with sufficient real AnyTLS traffic: session/error denominators, timeout stage, DATA progress and bytes, stream duration, first-byte and completion latency, TCP retransmissions/RTT, RSS/CPU and reconnects. Current production observations are too sparse to claim a speed or failure-rate gain. Synthetic success proves this regression is addressed in the fixture, not that it caused a live incident.
 
 Raw private production logs, credentials and remote endpoint information do not belong in this repository.
