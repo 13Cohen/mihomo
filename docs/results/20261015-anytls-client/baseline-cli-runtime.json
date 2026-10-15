@@ -1,0 +1,43 @@
+{
+  "tls": [
+    {
+      "version": "TLSv1.2",
+      "active_streams": 2,
+      "body_bytes": [
+        65536,
+        65536
+      ],
+      "payloads_ok": true,
+      "padding_update_ok": true,
+      "user_attribution_ok": true
+    },
+    {
+      "version": "TLSv1.3",
+      "active_streams": 2,
+      "body_bytes": [
+        65536,
+        65536
+      ],
+      "payloads_ok": true,
+      "padding_update_ok": true,
+      "user_attribution_ok": true
+    }
+  ],
+  "controller_version": "v1.19.17",
+  "socket_mode": "0o600",
+  "controller_directory_mode": "0o700",
+  "wrong_auth_rejected": true,
+  "wrong_hostname_rejected": true,
+  "untrusted_certificate_rejected": true,
+  "listening_tcp_ports": [
+    7443,
+    19081
+  ],
+  "management_tcp_listener": false,
+  "ok": true,
+  "version_output": "Mihomo Meta v1.19.17 linux amd64 with go1.25.4 Mon Dec  1 01:00:44 UTC 2025\nUse tags: with_gvisor",
+  "isolated_network": true,
+  "host_ports_published": false,
+  "config_test_ok": true,
+  "image_id": "sha256:652d3933868d439771c3286e982dec1a59ca889a0704a79576db5c85f2bd1490"
+}

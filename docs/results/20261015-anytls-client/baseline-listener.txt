@@ -1,0 +1,40 @@
+=== RUN   TestAcceptanceListenerPoolTLSAndPadding
+=== RUN   TestAcceptanceListenerPoolTLSAndPadding/tls_303
+=== RUN   TestAcceptanceListenerPoolTLSAndPadding/tls_303/custom_padding_false
+    acceptance_test.go:190: TLS=303 streams=32 TLS_connections=4 custom_padding=false
+=== RUN   TestAcceptanceListenerPoolTLSAndPadding/tls_303/custom_padding_true
+    acceptance_test.go:190: TLS=303 streams=32 TLS_connections=4 custom_padding=true
+=== RUN   TestAcceptanceListenerPoolTLSAndPadding/tls_304
+=== RUN   TestAcceptanceListenerPoolTLSAndPadding/tls_304/custom_padding_false
+    acceptance_test.go:190: TLS=304 streams=32 TLS_connections=4 custom_padding=false
+=== RUN   TestAcceptanceListenerPoolTLSAndPadding/tls_304/custom_padding_true
+    acceptance_test.go:190: TLS=304 streams=32 TLS_connections=4 custom_padding=true
+--- PASS: TestAcceptanceListenerPoolTLSAndPadding (0.37s)
+    --- PASS: TestAcceptanceListenerPoolTLSAndPadding/tls_303 (0.27s)
+        --- PASS: TestAcceptanceListenerPoolTLSAndPadding/tls_303/custom_padding_false (0.25s)
+        --- PASS: TestAcceptanceListenerPoolTLSAndPadding/tls_303/custom_padding_true (0.02s)
+    --- PASS: TestAcceptanceListenerPoolTLSAndPadding/tls_304 (0.10s)
+        --- PASS: TestAcceptanceListenerPoolTLSAndPadding/tls_304/custom_padding_false (0.08s)
+        --- PASS: TestAcceptanceListenerPoolTLSAndPadding/tls_304/custom_padding_true (0.02s)
+=== RUN   TestAcceptanceListenerSlowConnectionDeadlineAndCancellation
+    acceptance_test.go:255: slow receiver isolated by separate outer connection; payload and deadline reset preserved
+--- PASS: TestAcceptanceListenerSlowConnectionDeadlineAndCancellation (0.01s)
+=== RUN   TestAcceptanceListenerRejectsWrongCredentialsAndCertificate
+=== RUN   TestAcceptanceListenerRejectsWrongCredentialsAndCertificate/bad_password
+=== RUN   TestAcceptanceListenerRejectsWrongCredentialsAndCertificate/wrong_hostname
+=== RUN   TestAcceptanceListenerRejectsWrongCredentialsAndCertificate/untrusted_certificate
+--- PASS: TestAcceptanceListenerRejectsWrongCredentialsAndCertificate (0.07s)
+    --- PASS: TestAcceptanceListenerRejectsWrongCredentialsAndCertificate/bad_password (0.00s)
+    --- PASS: TestAcceptanceListenerRejectsWrongCredentialsAndCertificate/wrong_hostname (0.00s)
+    --- PASS: TestAcceptanceListenerRejectsWrongCredentialsAndCertificate/untrusted_certificate (0.00s)
+=== RUN   TestAcceptanceListenerSameSessionMultiStream
+    acceptance_test.go:367: one verified TLS/auth session, eight concurrent streams, 32 exact payload exchanges, negotiated padding confirmed
+--- PASS: TestAcceptanceListenerSameSessionMultiStream (0.01s)
+=== RUN   TestAcceptanceListenerSeparateUsers
+--- PASS: TestAcceptanceListenerSeparateUsers (0.01s)
+=== RUN   TestAcceptanceCanceledDialDoesNotReachTunnel
+--- PASS: TestAcceptanceCanceledDialDoesNotReachTunnel (0.00s)
+=== RUN   TestAcceptanceAuthenticatedProgressingDATAWithQueuedControl
+    acceptance_test.go:603: authenticated DATA interrupted by queued control: unexpected EOF
+--- FAIL: TestAcceptanceAuthenticatedProgressingDATAWithQueuedControl (5.04s)
+FAIL

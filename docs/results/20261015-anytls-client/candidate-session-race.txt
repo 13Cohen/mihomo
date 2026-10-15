@@ -1,0 +1,49 @@
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.06s)
+=== RUN   TestTLSConcurrentDATAFINPreservesPaddingAndPayload
+=== RUN   TestTLSConcurrentDATAFINPreservesPaddingAndPayload/tls_303
+    control_deadline_acceptance_test.go:252: verified TLS, six exact frames, initial buffering, padding stop and concurrent DATA/FIN: 6.038s
+=== RUN   TestTLSConcurrentDATAFINPreservesPaddingAndPayload/tls_304
+    control_deadline_acceptance_test.go:252: verified TLS, six exact frames, initial buffering, padding stop and concurrent DATA/FIN: 6.040s
+--- PASS: TestTLSConcurrentDATAFINPreservesPaddingAndPayload (12.11s)
+    --- PASS: TestTLSConcurrentDATAFINPreservesPaddingAndPayload/tls_303 (6.05s)
+    --- PASS: TestTLSConcurrentDATAFINPreservesPaddingAndPayload/tls_304 (6.06s)
+=== RUN   TestTLSServerConcurrentDATAFINIntegrity
+=== RUN   TestTLSServerConcurrentDATAFINIntegrity/tls_303
+=== RUN   TestTLSServerConcurrentDATAFINIntegrity/tls_304
+--- PASS: TestTLSServerConcurrentDATAFINIntegrity (12.11s)
+    --- PASS: TestTLSServerConcurrentDATAFINIntegrity/tls_303 (6.05s)
+    --- PASS: TestTLSServerConcurrentDATAFINIntegrity/tls_304 (6.06s)
+=== RUN   TestConcurrentStreamsHaveCompleteFrames
+--- PASS: TestConcurrentStreamsHaveCompleteFrames (0.00s)
+=== RUN   TestSessionCloseUnblocksQueuedWriters
+--- PASS: TestSessionCloseUnblocksQueuedWriters (0.00s)
+=== RUN   TestConcurrentStreamAPIClose
+--- PASS: TestConcurrentStreamAPIClose (0.03s)
+=== RUN   TestPartialDATAFailureClosesSession
+--- PASS: TestPartialDATAFailureClosesSession (0.00s)
+=== RUN   TestRealTLSDeadPeerWriteBudget
+    control_deadline_acceptance_test.go:453: opt-in: real 60-second TCP/TLS deadline
+--- SKIP: TestRealTLSDeadPeerWriteBudget (0.00s)
+=== RUN   TestControlDeadlineDoesNotInterruptProgressingData
+    control_deadline_test.go:82: progressing DATA plus unrelated FIN complete in 6.526s; bytes=65549
+--- PASS: TestControlDeadlineDoesNotInterruptProgressingData (6.63s)
+=== RUN   TestDeadPeerStillHasBoundedWriteBudget
+    control_deadline_test.go:107: control=false real requested budget=59.999996989s, accelerated dead-peer exit verified
+    control_deadline_test.go:107: control=true real requested budget=4.999996516s, accelerated dead-peer exit verified
+--- PASS: TestDeadPeerStillHasBoundedWriteBudget (0.16s)
+=== RUN   TestStreamCloseErrorPublication
+=== RUN   TestStreamCloseErrorPublication/local
+=== RUN   TestStreamCloseErrorPublication/public
+=== RUN   TestStreamCloseErrorPublication/remote
+--- PASS: TestStreamCloseErrorPublication (0.00s)
+    --- PASS: TestStreamCloseErrorPublication/local (0.00s)
+    --- PASS: TestStreamCloseErrorPublication/public (0.00s)
+    --- PASS: TestStreamCloseErrorPublication/remote (0.00s)
+=== RUN   TestStreamConcurrentCloseReasonsFirstWins
+--- PASS: TestStreamConcurrentCloseReasonsFirstWins (0.00s)
+PASS
+ok  	github.com/metacubex/mihomo/transport/anytls/session	32.195s

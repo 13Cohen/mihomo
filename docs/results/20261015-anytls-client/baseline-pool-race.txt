@@ -1,0 +1,85 @@
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+==================
+WARNING: DATA RACE
+Read at 0x00c0000b5038 by goroutine 11:
+  github.com/metacubex/mihomo/transport/anytls/skiplist.(*SkipList[go.shape.uint64,go.shape.*uint8]).Len()
+      SOURCE/transport/anytls/skiplist/skiplist.go:72 +0x84
+  github.com/metacubex/mihomo/transport/anytls/session.(*Client).idleCleanupExpTime()
+      SOURCE/transport/anytls/session/client.go:162 +0x22
+  github.com/metacubex/mihomo/transport/anytls/session.TestClientPoolConcurrentReuseAndIdleCleanup.func3()
+      SOURCE/transport/anytls/session/client_lifecycle_test.go:104 +0xbd
+
+Previous write at 0x00c0000b5038 by goroutine 15:
+  github.com/metacubex/mihomo/transport/anytls/skiplist.(*SkipList[go.shape.uint64,go.shape.*uint8]).Remove()
+      SOURCE/transport/anytls/skiplist/skiplist.go:169 +0x25e
+  github.com/metacubex/mihomo/transport/anytls/session.(*Client).getIdleSession()
+      SOURCE/transport/anytls/session/client.go:106 +0x19e
+  github.com/metacubex/mihomo/transport/anytls/session.(*Client).CreateStream()
+      SOURCE/transport/anytls/session/client.go:69 +0x79
+  github.com/metacubex/mihomo/transport/anytls/session.TestClientPoolConcurrentReuseAndIdleCleanup.func4()
+      SOURCE/transport/anytls/session/client_lifecycle_test.go:117 +0xfd
+  github.com/metacubex/mihomo/transport/anytls/session.TestClientPoolConcurrentReuseAndIdleCleanup.gowrap1()
+      SOURCE/transport/anytls/session/client_lifecycle_test.go:145 +0x41
+
+Goroutine 11 (running) created at:
+  github.com/metacubex/mihomo/transport/anytls/session.TestClientPoolConcurrentReuseAndIdleCleanup()
+      SOURCE/transport/anytls/session/client_lifecycle_test.go:97 +0x487
+  testing.tRunner()
+      /usr/local/goSOURCE/testing/testing.go:1934 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/local/goSOURCE/testing/testing.go:1997 +0x44
+
+Goroutine 15 (running) created at:
+  github.com/metacubex/mihomo/transport/anytls/session.TestClientPoolConcurrentReuseAndIdleCleanup()
+      SOURCE/transport/anytls/session/client_lifecycle_test.go:114 +0x4fa
+  testing.tRunner()
+      /usr/local/goSOURCE/testing/testing.go:1934 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/local/goSOURCE/testing/testing.go:1997 +0x44
+==================
+==================
+WARNING: DATA RACE
+Read at 0x00c0000b5038 by goroutine 11:
+  github.com/metacubex/mihomo/transport/anytls/skiplist.(*SkipList[go.shape.uint64,go.shape.*uint8]).Len()
+      SOURCE/transport/anytls/skiplist/skiplist.go:72 +0x84
+  github.com/metacubex/mihomo/transport/anytls/session.(*Client).idleCleanupExpTime()
+      SOURCE/transport/anytls/session/client.go:162 +0x22
+  github.com/metacubex/mihomo/transport/anytls/session.TestClientPoolConcurrentReuseAndIdleCleanup.func3()
+      SOURCE/transport/anytls/session/client_lifecycle_test.go:104 +0xbd
+
+Previous write at 0x00c0000b5038 by goroutine 14:
+  github.com/metacubex/mihomo/transport/anytls/skiplist.(*SkipList[go.shape.uint64,go.shape.*uint8]).Insert()
+      SOURCE/transport/anytls/skiplist/skiplist.go:119 +0x3a4
+  github.com/metacubex/mihomo/transport/anytls/session.(*Client).CreateStream.func1()
+      SOURCE/transport/anytls/session/client.go:92 +0x1c4
+  github.com/metacubex/mihomo/transport/anytls/session.(*Stream).closeWithError()
+      SOURCE/transport/anytls/session/stream.go:93 +0xfc
+  github.com/metacubex/mihomo/transport/anytls/session.(*Stream).Close()
+      SOURCE/transport/anytls/session/stream.go:65 +0x44
+  github.com/metacubex/mihomo/transport/anytls/session.TestClientPoolConcurrentReuseAndIdleCleanup.func4()
+      SOURCE/transport/anytls/session/client_lifecycle_test.go:139 +0x2fe
+  github.com/metacubex/mihomo/transport/anytls/session.TestClientPoolConcurrentReuseAndIdleCleanup.gowrap1()
+      SOURCE/transport/anytls/session/client_lifecycle_test.go:145 +0x41
+
+Goroutine 11 (running) created at:
+  github.com/metacubex/mihomo/transport/anytls/session.TestClientPoolConcurrentReuseAndIdleCleanup()
+      SOURCE/transport/anytls/session/client_lifecycle_test.go:97 +0x487
+  testing.tRunner()
+      /usr/local/goSOURCE/testing/testing.go:1934 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/local/goSOURCE/testing/testing.go:1997 +0x44
+
+Goroutine 14 (running) created at:
+  github.com/metacubex/mihomo/transport/anytls/session.TestClientPoolConcurrentReuseAndIdleCleanup()
+      SOURCE/transport/anytls/session/client_lifecycle_test.go:114 +0x4fa
+  testing.tRunner()
+      /usr/local/goSOURCE/testing/testing.go:1934 +0x21c
+  testing.(*T).Run.gowrap1()
+      /usr/local/goSOURCE/testing/testing.go:1997 +0x44
+==================
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+    testing.go:1617: race detected during execution of test
+--- FAIL: TestClientPoolConcurrentReuseAndIdleCleanup (0.09s)
+FAIL
+FAIL	github.com/metacubex/mihomo/transport/anytls/session	0.193s
+FAIL

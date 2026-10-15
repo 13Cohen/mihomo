@@ -1,0 +1,6 @@
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+    client_lifecycle_test.go:55: closed client published late dial: returned_stream=true err=<nil> retained_sessions=1
+--- FAIL: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+FAIL
+FAIL	github.com/metacubex/mihomo/transport/anytls/session	0.071s
+FAIL

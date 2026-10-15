@@ -1,0 +1,52 @@
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.07s)
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.04s)
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.07s)
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.03s)
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.07s)
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.03s)
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.04s)
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.08s)
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.09s)
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.00s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+    client_lifecycle_test.go:157: completed_streams=48 physical_sessions=4
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.02s)
+PASS
+ok  	github.com/metacubex/mihomo/transport/anytls/session	1.691s
