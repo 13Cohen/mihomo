@@ -1,6 +1,6 @@
 # AnyTLS client lifecycle and authenticated listener acceptance
 
-Status: candidate source validation. No production binary was replaced.
+Status: source and pinned candidate image validation completed. Production rollout and observation are recorded separately in PCS operations; this document records isolated acceptance.
 
 ## Provenance and scope
 
@@ -45,7 +45,7 @@ The runner uses Go 1.25.6 with the pinned module versions, network-none test con
 
 TLS 1.2 and 1.3 each carried two concurrent streams, with four complete 65536-byte response bodies checked byte for byte; negotiated padding, settings and SYNACK were verified. Two separate user identities were correctly attributed by the Unix API. Wrong password, wrong hostname and an untrusted certificate were rejected. Only the fixture proxy and HTTP target TCP ports were listening; no TCP management listener was present. The controller directory was 0700 and socket 0600, explicitly applied by the harness to mirror deployment policy rather than attributed to Mihomo's default socket creation. Certificate files stayed inside the allowed Mihomo home directory; the test did not widen SAFE_PATHS. `mihomo -v` confirmed the original `with_gvisor` tag.
 
-The same script must pass on the release candidate image after the full tagged build. A synthetic credential/certificate fixture does not replace the separate read-only production-config compatibility check. No production credentials, destinations or traffic are used by this test.
+The exact same script passed the candidate image at 18:33:11–18:33:15 UTC, exit 0: image `sha256:cc4b1b8ece31d5a405bb3d6a5437153df93f7a069cf8c91414973438c2a7a174`, version `v1.19.17-pcsproxy1`, Go 1.25.6 and `with_gvisor`. All payload, concurrency, authentication, padding and controller checks matched the old-image positive control; see `candidate-cli-runtime.json`. Both runs cleaned their isolated containers. A synthetic credential/certificate fixture does not replace the separate read-only production-config compatibility check. No production credentials, destinations or traffic are used by this test.
 
 ```sh
 python3 docs/experiments/anytls-runtime-smoke.py --image PINNED_IMAGE_ID --output-dir PRIVATE_RESULT_DIRECTORY
@@ -74,6 +74,6 @@ GOMAXPROCS=1 GOOS=linux GOARCH=amd64 GOAMD64=v1 CGO_ENABLED=0   go build -mod=re
 ./out/mihomo -v
 ```
 
-Use the pinned Go 1.25.6 toolchain already used in the regressions, record its exact image ID, source SHA and binary SHA256, and confirm `with_gvisor` appears in the binary version output. Go 1.25.6 full-build compatibility is still an open gate; do not silently drop gVisor/TUN or upgrade dependencies to make a build pass. The existing runtime image ID is `sha256:652d3933868d439771c3286e982dec1a59ca889a0704a79576db5c85f2bd1490`; preserve that exact image as rollback and create the candidate by replacing only `/mihomo` in a new image based on the same runtime. Do not rebuild from floating upstream alpine/latest or refresh geodata as an unrelated change.
+Use the pinned Go 1.25.6 toolchain already used in the regressions, record its exact image ID, source SHA and binary SHA256, and confirm `with_gvisor` appears in the binary version output. The root-coordinated fixed-archive build passed at 18:23:06.943250–18:32:25.403976 UTC using Go 1.25.6, CGO_ENABLED=0, GOAMD64=v1 and with_gvisor, with no dependency upgrades. The resulting binary SHA256 is `0ff9f06a4132aec3ed94e42c1e0f783ada9879e41a5ba28f4026742c3e2088ef`. The isolated CLI smoke independently confirmed the version/tag and actual listener behavior. This does not exercise a live TUN interface. The existing runtime image ID is `sha256:652d3933868d439771c3286e982dec1a59ca889a0704a79576db5c85f2bd1490`; preserve that exact image as rollback and create the candidate by replacing only `/mihomo` in a new image based on the same runtime. Do not rebuild from floating upstream alpine/latest or refresh geodata as an unrelated change.
 
 Before a canary, verify candidate configuration parsing against read-only deployment configuration, version/tags, private controller permissions, authentication/TLS/padding and an isolated real-client smoke test. The collector and rollback image must survive the single-service transition. The accepted implementation candidate is exactly `61f2efa50563367ee5662b31e0e3ed26cf6a3988`. Relative to production, its only changed non-test Go files are `transport/anytls/session/session.go` (A1 deadline ownership and partial-write close), `stream.go` (atomic immutable close-error publication), and `client.go` (two independently reviewed pool lifecycle fixes). Client-pool fixes are retained in this exact tested candidate; they are not called by this server listener path and are not attributed as server or Shadowrocket performance gains.
