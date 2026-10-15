@@ -1,0 +1,66 @@
+=== RUN   TestClientCloseDuringDialDoesNotPublishSession
+--- PASS: TestClientCloseDuringDialDoesNotPublishSession (0.01s)
+=== RUN   TestClientPoolConcurrentReuseAndIdleCleanup
+--- PASS: TestClientPoolConcurrentReuseAndIdleCleanup (0.03s)
+=== RUN   TestTLSConcurrentDATAFINPreservesPaddingAndPayload
+=== RUN   TestTLSConcurrentDATAFINPreservesPaddingAndPayload/tls_303
+=== RUN   TestTLSConcurrentDATAFINPreservesPaddingAndPayload/tls_304
+--- PASS: TestTLSConcurrentDATAFINPreservesPaddingAndPayload (12.16s)
+    --- PASS: TestTLSConcurrentDATAFINPreservesPaddingAndPayload/tls_303 (6.11s)
+    --- PASS: TestTLSConcurrentDATAFINPreservesPaddingAndPayload/tls_304 (6.06s)
+=== RUN   TestTLSServerConcurrentDATAFINIntegrity
+=== RUN   TestTLSServerConcurrentDATAFINIntegrity/tls_303
+=== RUN   TestTLSServerConcurrentDATAFINIntegrity/tls_304
+--- PASS: TestTLSServerConcurrentDATAFINIntegrity (12.14s)
+    --- PASS: TestTLSServerConcurrentDATAFINIntegrity/tls_303 (6.06s)
+    --- PASS: TestTLSServerConcurrentDATAFINIntegrity/tls_304 (6.08s)
+=== RUN   TestConcurrentStreamsHaveCompleteFrames
+--- PASS: TestConcurrentStreamsHaveCompleteFrames (0.00s)
+=== RUN   TestSessionCloseUnblocksQueuedWriters
+--- PASS: TestSessionCloseUnblocksQueuedWriters (0.00s)
+=== RUN   TestConcurrentStreamAPIClose
+--- PASS: TestConcurrentStreamAPIClose (0.01s)
+=== RUN   TestPartialDATAFailureClosesSession
+--- PASS: TestPartialDATAFailureClosesSession (0.00s)
+=== RUN   TestRealTLSDeadPeerWriteBudget
+--- SKIP: TestRealTLSDeadPeerWriteBudget (0.00s)
+=== RUN   TestControlDeadlineDoesNotInterruptProgressingData
+--- PASS: TestControlDeadlineDoesNotInterruptProgressingData (6.63s)
+=== RUN   TestDeadPeerStillHasBoundedWriteBudget
+--- PASS: TestDeadPeerStillHasBoundedWriteBudget (0.16s)
+=== RUN   TestStageEvidenceSocketCookieTLSAndUnavailable
+--- PASS: TestStageEvidenceSocketCookieTLSAndUnavailable (0.04s)
+=== RUN   TestStageEvidenceTLSWriterQueueAndCompletion
+=== RUN   TestStageEvidenceTLSWriterQueueAndCompletion/303
+=== RUN   TestStageEvidenceTLSWriterQueueAndCompletion/304
+--- PASS: TestStageEvidenceTLSWriterQueueAndCompletion (1.45s)
+    --- PASS: TestStageEvidenceTLSWriterQueueAndCompletion/303 (0.73s)
+    --- PASS: TestStageEvidenceTLSWriterQueueAndCompletion/304 (0.72s)
+=== RUN   TestStageEvidenceTLSReceiveWireVersusPipe
+--- PASS: TestStageEvidenceTLSReceiveWireVersusPipe (0.14s)
+=== RUN   TestStageEvidenceCapacityRotationAndUnknown
+--- PASS: TestStageEvidenceCapacityRotationAndUnknown (0.00s)
+=== RUN   TestStageEvidenceSlowRingAndBlockedSinkAreBounded
+--- PASS: TestStageEvidenceSlowRingAndBlockedSinkAreBounded (0.00s)
+=== RUN   TestStageEvidenceDefaultOffAndClientRefusal
+--- PASS: TestStageEvidenceDefaultOffAndClientRefusal (0.00s)
+=== RUN   TestStageEvidenceConcurrentSnapshotAndRotation
+--- PASS: TestStageEvidenceConcurrentSnapshotAndRotation (0.03s)
+=== RUN   TestStageEvidenceDelayedTickerUsesActualCapture
+--- PASS: TestStageEvidenceDelayedTickerUsesActualCapture (0.00s)
+=== RUN   TestStageEvidenceExportQueueAge
+--- PASS: TestStageEvidenceExportQueueAge (0.12s)
+=== RUN   TestStageEvidenceSlowEventContainsActualInterval
+--- PASS: TestStageEvidenceSlowEventContainsActualInterval (0.12s)
+=== RUN   TestStreamCloseErrorPublication
+=== RUN   TestStreamCloseErrorPublication/local
+=== RUN   TestStreamCloseErrorPublication/public
+=== RUN   TestStreamCloseErrorPublication/remote
+--- PASS: TestStreamCloseErrorPublication (0.00s)
+    --- PASS: TestStreamCloseErrorPublication/local (0.00s)
+    --- PASS: TestStreamCloseErrorPublication/public (0.00s)
+    --- PASS: TestStreamCloseErrorPublication/remote (0.00s)
+=== RUN   TestStreamConcurrentCloseReasonsFirstWins
+--- PASS: TestStreamConcurrentCloseReasonsFirstWins (0.00s)
+PASS
+ok  	github.com/metacubex/mihomo/transport/anytls/session	34.174s

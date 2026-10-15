@@ -1,0 +1,12 @@
+goos: linux
+goarch: amd64
+pkg: github.com/metacubex/mihomo/transport/anytls/session
+cpu: QEMU Virtual CPU version 2.5+
+BenchmarkStageEvidenceWrite/disabled         	  386736	      3313 ns/op	      64 B/op	       1 allocs/op
+BenchmarkStageEvidenceWrite/disabled         	  341054	      3777 ns/op	      64 B/op	       1 allocs/op
+BenchmarkStageEvidenceWrite/disabled         	  284110	      3406 ns/op	      64 B/op	       1 allocs/op
+BenchmarkStageEvidenceWrite/enabled          	  129890	      5131 ns/op	      64 B/op	       1 allocs/op
+BenchmarkStageEvidenceWrite/enabled          	  436573	      5032 ns/op	      64 B/op	       1 allocs/op
+BenchmarkStageEvidenceWrite/enabled          	  107954	      4943 ns/op	      64 B/op	       1 allocs/op
+PASS
+ok  	github.com/metacubex/mihomo/transport/anytls/session	7.936s

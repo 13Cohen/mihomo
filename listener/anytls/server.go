@@ -157,6 +157,7 @@ func (l *Listener) AddrList() (addrList []net.Addr) {
 
 func (l *Listener) HandleConn(conn net.Conn, h *sing.ListenerHandler) {
 	ctx := context.TODO()
+	transportConn := conn // preserve the TLS wrapper before CachedConn; no read before authentication
 	defer conn.Close()
 
 	b := buf.NewPacket()
@@ -191,7 +192,7 @@ func (l *Listener) HandleConn(conn net.Conn, h *sing.ListenerHandler) {
 		}
 	}
 
-	session := session.NewServerSession(conn, func(stream *session.Stream) {
+	serverSession := session.NewServerSession(conn, func(stream *session.Stream) {
 		defer stream.Close()
 
 		destination, err := M.SocksaddrSerializer.ReadAddrPort(stream)
@@ -210,6 +211,9 @@ func (l *Listener) HandleConn(conn net.Conn, h *sing.ListenerHandler) {
 			Destination: destination,
 		})
 	}, &l.padding)
-	session.Run()
-	session.Close()
+	if l.config.StageEvidence {
+		serverSession.EnableServerStageEvidence(session.SocketCookie(transportConn))
+	}
+	serverSession.Run()
+	serverSession.Close()
 }

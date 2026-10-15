@@ -1,0 +1,9 @@
+goos: linux
+goarch: amd64
+pkg: github.com/metacubex/mihomo/transport/anytls/session
+cpu: QEMU Virtual CPU version 2.5+
+BenchmarkStageEvidenceDisabledCost 	  223393	      3972 ns/op	      64 B/op	       1 allocs/op
+BenchmarkStageEvidenceDisabledCost 	  353595	      3617 ns/op	      64 B/op	       1 allocs/op
+BenchmarkStageEvidenceDisabledCost 	  386030	      3321 ns/op	      64 B/op	       1 allocs/op
+PASS
+ok  	github.com/metacubex/mihomo/transport/anytls/session	3.795s

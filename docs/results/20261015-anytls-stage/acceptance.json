@@ -1,0 +1,161 @@
+{
+  "status": "HOLD: function and race pass; disabled cost regression prevents release",
+  "source_base": "61f2efa50563367ee5662b31e0e3ed26cf6a3988",
+  "production_deployed": false,
+  "environment": {
+    "go": "1.25.6",
+    "os": "linux/amd64",
+    "gomaxprocs": 1,
+    "cpu_limit": 0.35,
+    "memory_mib": 512,
+    "memory_plus_swap_mib": 1024,
+    "network": "none; loopback only",
+    "microbenchmark_payload_bytes": 16384,
+    "microbenchmark_connection": "in-memory full-write discard, no TLS",
+    "benchtime": "500ms",
+    "samples_per_group": 3
+  },
+  "windows_utc": {
+    "initial": {
+      "start": "2026-10-15T18:52:05Z",
+      "end": "2026-10-15T18:57:36Z",
+      "exit": 124
+    },
+    "revised": {
+      "start": "2026-10-15T18:59:36Z",
+      "end": "2026-10-15T19:01:53Z",
+      "exit": 0
+    },
+    "final": {
+      "start": "2026-10-15T19:06:46.018640449Z",
+      "end": "2026-10-15T19:11:26.195246311Z",
+      "exit": 0
+    }
+  },
+  "functional": {
+    "session_race_seconds": 34.174,
+    "listener_authentication_gate_seconds": 10.024,
+    "python_consumer_tests": 3,
+    "full_listener_race": "not run",
+    "real_60s_dead_peer": "previous A1 acceptance; not repeated",
+    "initial_window": "session tests passed; dependent listener compile timed out; not counted as a full pass"
+  },
+  "disabled_abba": {
+    "groups": [
+      {
+        "order": "base1",
+        "samples": [
+          {
+            "ns_per_op": 2861.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          },
+          {
+            "ns_per_op": 3290.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          },
+          {
+            "ns_per_op": 3004.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          }
+        ],
+        "median_ns_per_op": 3004.0
+      },
+      {
+        "order": "candidate1",
+        "samples": [
+          {
+            "ns_per_op": 3972.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          },
+          {
+            "ns_per_op": 3617.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          },
+          {
+            "ns_per_op": 3321.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          }
+        ],
+        "median_ns_per_op": 3617.0
+      },
+      {
+        "order": "candidate2",
+        "samples": [
+          {
+            "ns_per_op": 4093.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          },
+          {
+            "ns_per_op": 3739.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          },
+          {
+            "ns_per_op": 3334.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          }
+        ],
+        "median_ns_per_op": 3739.0
+      },
+      {
+        "order": "base2",
+        "samples": [
+          {
+            "ns_per_op": 3180.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          },
+          {
+            "ns_per_op": 2242.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          },
+          {
+            "ns_per_op": 2759.0,
+            "bytes_per_op": 64,
+            "allocations_per_op": 1
+          }
+        ],
+        "median_ns_per_op": 2759.0
+      }
+    ],
+    "baseline_median_ns": 2932.5,
+    "candidate_median_ns": 3678.0,
+    "absolute_delta_ns": 745.5,
+    "relative_delta_percent": 25.421994884910482,
+    "allocations_each": 1,
+    "bytes_allocated_each": 64
+  },
+  "enabled_inner_loop": {
+    "disabled": {
+      "ns_per_op": [
+        3313.0,
+        3777.0,
+        3406.0
+      ],
+      "median_ns_per_op": 3406.0
+    },
+    "enabled": {
+      "ns_per_op": [
+        5131.0,
+        5032.0,
+        4943.0
+      ],
+      "median_ns_per_op": 5032.0
+    }
+  },
+  "limits": [
+    "Microbenchmark CPU quota and scheduling affect wall-clock ns/op; this is not TLS or public network throughput.",
+    "Enabled inner-loop benchmark excludes periodic JSON/export/log sink cost.",
+    "No production performance improvement or root-cause conclusion from these tests.",
+    "Raw runtime cookies and session tokens are deliberately absent."
+  ]
+}

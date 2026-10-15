@@ -1,0 +1,4 @@
+=== RUN   TestStageEvidenceAuthenticatedListenerGate
+--- PASS: TestStageEvidenceAuthenticatedListenerGate (10.01s)
+PASS
+ok  	github.com/metacubex/mihomo/listener/anytls	10.024s

@@ -21,6 +21,8 @@ import (
 )
 
 type Session struct {
+	evidence *stageHandle // immutable handle, enabled only before Run
+
 	conn     net.Conn
 	connLock sync.Mutex
 
@@ -113,6 +115,7 @@ func (s *Session) Close() error {
 		once = true
 	})
 	if once {
+		s.evidence.close()
 		if s.dieHook != nil {
 			s.dieHook()
 			s.dieHook = nil
@@ -182,18 +185,18 @@ func (s *Session) recvLoop() error {
 			return io.ErrClosedPipe
 		}
 		// read header first
-		if _, err := io.ReadFull(s.conn, hdr[:]); err == nil {
+		if _, err := s.readEvidence(hdr[:], stageReadHeader, 0); err == nil {
 			sid := hdr.StreamID()
 			switch hdr.Cmd() {
 			case cmdPSH:
 				if hdr.Length() > 0 {
 					buffer := pool.Get(int(hdr.Length()))
-					if _, err := io.ReadFull(s.conn, buffer); err == nil {
+					if _, err := s.readEvidence(buffer, stageReadBody, hdr.Cmd()); err == nil {
 						s.streamLock.RLock()
 						stream, ok := s.streams[sid]
 						s.streamLock.RUnlock()
 						if ok {
-							stream.pipeW.Write(buffer)
+							s.pipeEvidence(stream, buffer)
 						}
 						pool.Put(buffer)
 					} else {
@@ -230,7 +233,7 @@ func (s *Session) recvLoop() error {
 				s.synDoneLock.Unlock()
 				if hdr.Length() > 0 {
 					buffer := pool.Get(int(hdr.Length()))
-					if _, err := io.ReadFull(s.conn, buffer); err != nil {
+					if _, err := s.readEvidence(buffer, stageReadBody, hdr.Cmd()); err != nil {
 						pool.Put(buffer)
 						return err
 					}
@@ -254,7 +257,7 @@ func (s *Session) recvLoop() error {
 			case cmdWaste:
 				if hdr.Length() > 0 {
 					buffer := pool.Get(int(hdr.Length()))
-					if _, err := io.ReadFull(s.conn, buffer); err != nil {
+					if _, err := s.readEvidence(buffer, stageReadBody, hdr.Cmd()); err != nil {
 						pool.Put(buffer)
 						return err
 					}
@@ -263,7 +266,7 @@ func (s *Session) recvLoop() error {
 			case cmdSettings:
 				if hdr.Length() > 0 {
 					buffer := pool.Get(int(hdr.Length()))
-					if _, err := io.ReadFull(s.conn, buffer); err != nil {
+					if _, err := s.readEvidence(buffer, stageReadBody, hdr.Cmd()); err != nil {
 						pool.Put(buffer)
 						return err
 					}
@@ -300,7 +303,7 @@ func (s *Session) recvLoop() error {
 			case cmdAlert:
 				if hdr.Length() > 0 {
 					buffer := pool.Get(int(hdr.Length()))
-					if _, err := io.ReadFull(s.conn, buffer); err != nil {
+					if _, err := s.readEvidence(buffer, stageReadBody, hdr.Cmd()); err != nil {
 						pool.Put(buffer)
 						return err
 					}
@@ -314,7 +317,7 @@ func (s *Session) recvLoop() error {
 				if hdr.Length() > 0 {
 					// `rawScheme` Do not use buffer to prevent subsequent misuse
 					rawScheme := make([]byte, int(hdr.Length()))
-					if _, err := io.ReadFull(s.conn, rawScheme); err != nil {
+					if _, err := s.readEvidence(rawScheme, stageReadBody, hdr.Cmd()); err != nil {
 						return err
 					}
 					if s.isClient {
@@ -335,7 +338,7 @@ func (s *Session) recvLoop() error {
 			case cmdServerSettings:
 				if hdr.Length() > 0 {
 					buffer := pool.Get(int(hdr.Length()))
-					if _, err := io.ReadFull(s.conn, buffer); err != nil {
+					if _, err := s.readEvidence(buffer, stageReadBody, hdr.Cmd()); err != nil {
 						pool.Put(buffer)
 						return err
 					}
@@ -406,8 +409,11 @@ func (s *Session) writeControlFrame(frame frame) (int, error) {
 }
 
 func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err error) {
+	op := s.evidence.beginWrite(b[0], len(b))
 	s.connLock.Lock()
 	defer s.connLock.Unlock()
+	s.evidence.acquire(&op)
+	defer func() { s.evidence.finishWrite(&op, err) }()
 
 	if s.buffering {
 		s.buffer = append(s.buffer, b...)
@@ -439,7 +445,7 @@ func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err er
 					}
 				}
 				if remainPayloadLen > l { // this packet is all payload
-					_, err = s.conn.Write(b[:l])
+					_, err = s.evidence.write(&op, s.conn, b[:l])
 					if err != nil {
 						return 0, err
 					}
@@ -454,7 +460,7 @@ func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err er
 						binary.BigEndian.PutUint16(padding[5:7], uint16(paddingLen))
 						b = append(b, padding...)
 					}
-					_, err = s.conn.Write(b)
+					_, err = s.evidence.write(&op, s.conn, b)
 					if err != nil {
 						return 0, err
 					}
@@ -465,7 +471,7 @@ func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err er
 					padding[0] = cmdWaste
 					binary.BigEndian.PutUint32(padding[1:5], 0)
 					binary.BigEndian.PutUint16(padding[5:7], uint16(l))
-					_, err = s.conn.Write(padding)
+					_, err = s.evidence.write(&op, s.conn, padding)
 					if err != nil {
 						return 0, err
 					}
@@ -476,7 +482,7 @@ func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err er
 			if len(b) == 0 {
 				return
 			} else {
-				n2, err := s.conn.Write(b)
+				n2, err := s.evidence.write(&op, s.conn, b)
 				return n + n2, err
 			}
 		} else {
@@ -484,5 +490,5 @@ func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err er
 		}
 	}
 
-	return s.conn.Write(b)
+	return s.evidence.write(&op, s.conn, b)
 }

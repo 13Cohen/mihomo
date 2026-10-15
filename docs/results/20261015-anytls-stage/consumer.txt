@@ -1,0 +1,8 @@
+test_missing_cookie_and_epoch_are_unavailable (test_anytls_stage_consumer.ConsumerTests.test_missing_cookie_and_epoch_are_unavailable) ... ok
+test_overflow_and_malformed_diagnostic_are_not_faults (test_anytls_stage_consumer.ConsumerTests.test_overflow_and_malformed_diagnostic_are_not_faults) ... ok
+test_warning_is_diagnostic_and_scoped_cookie_matches (test_anytls_stage_consumer.ConsumerTests.test_warning_is_diagnostic_and_scoped_cookie_matches) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK

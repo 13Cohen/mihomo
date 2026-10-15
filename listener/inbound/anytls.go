@@ -10,6 +10,7 @@ import (
 )
 
 type AnyTLSOption struct {
+	StageEvidence bool `inbound:"stage-evidence,omitempty"`
 	BaseOption
 	Users          map[string]string `inbound:"users,omitempty"`
 	Certificate    string            `inbound:"certificate"`
@@ -41,6 +42,7 @@ func NewAnyTLS(options *AnyTLSOption) (*AnyTLS, error) {
 		config: options,
 		vs: LC.AnyTLSServer{
 			Enable:         true,
+			StageEvidence:  options.StageEvidence,
 			Listen:         base.RawAddress(),
 			Users:          options.Users,
 			Certificate:    options.Certificate,
