@@ -1,0 +1,82 @@
+=== RUN   TestReceiveSlowReaderDiagnostic
+    receive_hol_experiment_test.go:247: complete slow DATA available; same-session DATA+FIN progressed=false heartbeat=false; separate-session DATA+FIN completed=true; consumed=4172 available=4241
+--- PASS: TestReceiveSlowReaderDiagnostic (0.10s)
+=== RUN   TestReceiveIncompleteFrameMustWaitForWireBytes
+    receive_hol_experiment_test.go:286: both application readers ready; only releasing missing wire bytes restores DATA/FIN delivery
+--- PASS: TestReceiveIncompleteFrameMustWaitForWireBytes (0.10s)
+=== RUN   TestReceiveBlockedReaderSessionCancellation
+--- PASS: TestReceiveBlockedReaderSessionCancellation (0.00s)
+=== RUN   TestReceiveSlowReaderDiagnostic
+    receive_hol_experiment_test.go:247: complete slow DATA available; same-session DATA+FIN progressed=false heartbeat=false; separate-session DATA+FIN completed=true; consumed=4172 available=4241
+--- PASS: TestReceiveSlowReaderDiagnostic (0.10s)
+=== RUN   TestReceiveIncompleteFrameMustWaitForWireBytes
+    receive_hol_experiment_test.go:286: both application readers ready; only releasing missing wire bytes restores DATA/FIN delivery
+--- PASS: TestReceiveIncompleteFrameMustWaitForWireBytes (0.10s)
+=== RUN   TestReceiveBlockedReaderSessionCancellation
+--- PASS: TestReceiveBlockedReaderSessionCancellation (0.00s)
+=== RUN   TestReceiveSlowReaderDiagnostic
+    receive_hol_experiment_test.go:247: complete slow DATA available; same-session DATA+FIN progressed=false heartbeat=false; separate-session DATA+FIN completed=true; consumed=4172 available=4241
+--- PASS: TestReceiveSlowReaderDiagnostic (0.10s)
+=== RUN   TestReceiveIncompleteFrameMustWaitForWireBytes
+    receive_hol_experiment_test.go:286: both application readers ready; only releasing missing wire bytes restores DATA/FIN delivery
+--- PASS: TestReceiveIncompleteFrameMustWaitForWireBytes (0.10s)
+=== RUN   TestReceiveBlockedReaderSessionCancellation
+--- PASS: TestReceiveBlockedReaderSessionCancellation (0.00s)
+=== RUN   TestReceiveSlowReaderDiagnostic
+    receive_hol_experiment_test.go:247: complete slow DATA available; same-session DATA+FIN progressed=false heartbeat=false; separate-session DATA+FIN completed=true; consumed=4172 available=4241
+--- PASS: TestReceiveSlowReaderDiagnostic (0.10s)
+=== RUN   TestReceiveIncompleteFrameMustWaitForWireBytes
+    receive_hol_experiment_test.go:286: both application readers ready; only releasing missing wire bytes restores DATA/FIN delivery
+--- PASS: TestReceiveIncompleteFrameMustWaitForWireBytes (0.10s)
+=== RUN   TestReceiveBlockedReaderSessionCancellation
+--- PASS: TestReceiveBlockedReaderSessionCancellation (0.00s)
+=== RUN   TestReceiveSlowReaderDiagnostic
+    receive_hol_experiment_test.go:247: complete slow DATA available; same-session DATA+FIN progressed=false heartbeat=false; separate-session DATA+FIN completed=true; consumed=4172 available=4241
+--- PASS: TestReceiveSlowReaderDiagnostic (0.10s)
+=== RUN   TestReceiveIncompleteFrameMustWaitForWireBytes
+    receive_hol_experiment_test.go:286: both application readers ready; only releasing missing wire bytes restores DATA/FIN delivery
+--- PASS: TestReceiveIncompleteFrameMustWaitForWireBytes (0.10s)
+=== RUN   TestReceiveBlockedReaderSessionCancellation
+--- PASS: TestReceiveBlockedReaderSessionCancellation (0.00s)
+=== RUN   TestReceiveSlowReaderDiagnostic
+    receive_hol_experiment_test.go:247: complete slow DATA available; same-session DATA+FIN progressed=false heartbeat=false; separate-session DATA+FIN completed=true; consumed=4172 available=4241
+--- PASS: TestReceiveSlowReaderDiagnostic (0.10s)
+=== RUN   TestReceiveIncompleteFrameMustWaitForWireBytes
+    receive_hol_experiment_test.go:286: both application readers ready; only releasing missing wire bytes restores DATA/FIN delivery
+--- PASS: TestReceiveIncompleteFrameMustWaitForWireBytes (0.10s)
+=== RUN   TestReceiveBlockedReaderSessionCancellation
+--- PASS: TestReceiveBlockedReaderSessionCancellation (0.00s)
+=== RUN   TestReceiveSlowReaderDiagnostic
+    receive_hol_experiment_test.go:247: complete slow DATA available; same-session DATA+FIN progressed=false heartbeat=false; separate-session DATA+FIN completed=true; consumed=4172 available=4241
+--- PASS: TestReceiveSlowReaderDiagnostic (0.10s)
+=== RUN   TestReceiveIncompleteFrameMustWaitForWireBytes
+    receive_hol_experiment_test.go:286: both application readers ready; only releasing missing wire bytes restores DATA/FIN delivery
+--- PASS: TestReceiveIncompleteFrameMustWaitForWireBytes (0.10s)
+=== RUN   TestReceiveBlockedReaderSessionCancellation
+--- PASS: TestReceiveBlockedReaderSessionCancellation (0.00s)
+=== RUN   TestReceiveSlowReaderDiagnostic
+    receive_hol_experiment_test.go:247: complete slow DATA available; same-session DATA+FIN progressed=false heartbeat=false; separate-session DATA+FIN completed=true; consumed=4172 available=4241
+--- PASS: TestReceiveSlowReaderDiagnostic (0.10s)
+=== RUN   TestReceiveIncompleteFrameMustWaitForWireBytes
+    receive_hol_experiment_test.go:286: both application readers ready; only releasing missing wire bytes restores DATA/FIN delivery
+--- PASS: TestReceiveIncompleteFrameMustWaitForWireBytes (0.10s)
+=== RUN   TestReceiveBlockedReaderSessionCancellation
+--- PASS: TestReceiveBlockedReaderSessionCancellation (0.00s)
+=== RUN   TestReceiveSlowReaderDiagnostic
+    receive_hol_experiment_test.go:247: complete slow DATA available; same-session DATA+FIN progressed=false heartbeat=false; separate-session DATA+FIN completed=true; consumed=4172 available=4241
+--- PASS: TestReceiveSlowReaderDiagnostic (0.10s)
+=== RUN   TestReceiveIncompleteFrameMustWaitForWireBytes
+    receive_hol_experiment_test.go:286: both application readers ready; only releasing missing wire bytes restores DATA/FIN delivery
+--- PASS: TestReceiveIncompleteFrameMustWaitForWireBytes (0.10s)
+=== RUN   TestReceiveBlockedReaderSessionCancellation
+--- PASS: TestReceiveBlockedReaderSessionCancellation (0.00s)
+=== RUN   TestReceiveSlowReaderDiagnostic
+    receive_hol_experiment_test.go:247: complete slow DATA available; same-session DATA+FIN progressed=false heartbeat=false; separate-session DATA+FIN completed=true; consumed=4172 available=4241
+--- PASS: TestReceiveSlowReaderDiagnostic (0.10s)
+=== RUN   TestReceiveIncompleteFrameMustWaitForWireBytes
+    receive_hol_experiment_test.go:286: both application readers ready; only releasing missing wire bytes restores DATA/FIN delivery
+--- PASS: TestReceiveIncompleteFrameMustWaitForWireBytes (0.10s)
+=== RUN   TestReceiveBlockedReaderSessionCancellation
+--- PASS: TestReceiveBlockedReaderSessionCancellation (0.00s)
+PASS
+ok  	github.com/metacubex/mihomo/transport/anytls/session	3.172s

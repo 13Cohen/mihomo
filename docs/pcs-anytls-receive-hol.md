@@ -1,6 +1,8 @@
 # Receive dispatch isolation experiment
 
-Status: fixture and acceptance design prepared; **not yet compiled or executed**.
+Status: the diagnostic was executed against production source a001b1b and the
+A1 experiment branch on 2026-10-15. **Receive dispatch HOL was reproduced on both;
+no receive implementation fix is included.**
 No production behavior, collector, network parameter or binary change is part
 of this experiment. The experiment branch is `pcs/receive-hol-experiment`, based
 on the separate A1 source experiment and tests at 021f39a; the receive loop itself
@@ -50,7 +52,7 @@ A separate wire-gated case exposes only half of the first DATA frame while both
 application readers are ready; releasing the missing bytes must restore delivery.
 Session.Close must also cancel a receive loop waiting on a stream pipe.
 
-| Case | Baseline hypothesis, not a measured result yet | Acceptance purpose |
+| Case | Observed on baseline and A1 | Acceptance purpose |
 | --- | --- | --- |
 | Complete slow DATA, paused application reader, same-session other DATA/FIN and heartbeat | Other DATA/FIN and heartbeat wait | Isolate application dispatch HOL after complete frame arrival |
 | Separate Session while the first session is blocked | Intact DATA/FIN still complete | Check isolation at the Session layer, not the listener/router stack |
@@ -61,21 +63,54 @@ Session.Close must also cancel a receive loop waiting on a stream pipe.
 The default diagnostic test reports whether same-session progress occurred,
 without treating current blocking as a desirable permanent contract. Setting
 `PCS_ANYTLS_REQUIRE_RECV_ISOLATION=1` makes progress of the unrelated DATA/FIN and
-heartbeat an explicit future-candidate acceptance gate. Baseline failure of that
-gate would be expected evidence, not a test-infrastructure success or a reason
-to hide the failure. The 100 ms observation period is a controlled pause, not a
-latency target for the Internet.
+heartbeat an explicit future-candidate acceptance gate. Both branches failed
+that gate as expected. This records the absence of receive isolation, not a
+test-infrastructure success or a reason to hide the failure. The 100 ms
+observation period is a controlled pause, not a latency target for the Internet.
 
-## How to validate when the shared experiment slot is free
+## Recorded results
+
+The six runs completed at 14:22:32–14:25:42 UTC on 2026-10-15. They used the
+same Go 1.25.6 toolchain/dependencies and cached, serial builds, with a shared
+experiment lock, 0.25 CPU, 512 MiB RAM / 1024 MiB RAM+swap, GOMAXPROCS=1 and
+GOMEMLIMIT=384MiB. Compilation time is excluded from the Go package times below.
+Only synthetic in-memory frames were used; production was not modified.
+
+| Run | a001b1b baseline | A1 branch + fixture | Meaning |
+| --- | --- | --- | --- |
+| Three diagnostic cases, once | PASS, 0.266 s | PASS, 0.216 s | The fixture reproduced and distinguished the blocking mechanisms |
+| Explicit receive-isolation gate | FAIL, 0.231 s | FAIL, 0.212 s | Neither implementation isolates the unrelated stream/control dispatch |
+| Three receive cases with race detection, 10 repetitions | PASS, 3.168 s | PASS, 3.172 s | No race detected within these receive-only cases |
+
+Every repetition stopped at 4172 consumed bytes out of a complete 4241-byte
+script while the 4096-byte slow DATA reader was paused. During the 100 ms
+observation window, the same-session fast DATA+FIN and heartbeat did not
+progress; the independent session completed exact DATA+FIN. Releasing the slow
+reader restored all expected bytes, FINs and heartbeat. Both versions also
+passed the incomplete-wire-frame and Session.Close cancellation controls.
+These are controlled dependency results, not Internet latency measurements.
+
+The recvLoop function was verified byte-identical between a001b1b and the
+experiment branch. A1's send-deadline/race changes therefore do not remove this
+separate receive dependency. The successful receive-only race run does not
+supersede the broader A1 findings, untested client-pool hooks or full-client
+acceptance requirements.
+
+Exact outputs, hashes, source commits and resource limits are in
+[`results/20261015-receive-hol/results.json`](results/20261015-receive-hol/results.json)
+and the six adjacent output files.
+
+## Reproduction
 
 Keep the deployed source/dependencies and toolchain constant. Copy only this
 self-contained test file to the a001b1b baseline worktree; do not change baseline
 implementation. Compilation and tests must use the shared experiment lock and
-resource cap. These commands are planned, not recorded as already run:
+resource cap. The recorded runs used these commands (the explicit gate ran all
+three cases, and fails specifically at the slow-reader case):
 
 ```sh
 go test -mod=readonly -p 1 ./transport/anytls/session -run '^TestReceive' -count=1 -timeout=30s -v
-PCS_ANYTLS_REQUIRE_RECV_ISOLATION=1 go test -mod=readonly -p 1 ./transport/anytls/session -run '^TestReceiveSlowReaderDiagnostic$' -count=1 -timeout=30s -v
+PCS_ANYTLS_REQUIRE_RECV_ISOLATION=1 go test -mod=readonly -p 1 ./transport/anytls/session -run '^TestReceive' -count=1 -timeout=30s -v
 CGO_ENABLED=1 go test -race -mod=readonly -p 1 ./transport/anytls/session -run '^TestReceive' -count=10 -timeout=30s -v
 ```
 

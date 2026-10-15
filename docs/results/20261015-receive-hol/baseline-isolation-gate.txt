@@ -1,0 +1,12 @@
+=== RUN   TestReceiveSlowReaderDiagnostic
+    receive_hol_experiment_test.go:247: complete slow DATA available; same-session DATA+FIN progressed=false heartbeat=false; separate-session DATA+FIN completed=true; consumed=4172 available=4241
+    receive_hol_experiment_test.go:261: a complete slow-stream frame blocked unrelated stream/control dispatch
+--- FAIL: TestReceiveSlowReaderDiagnostic (0.10s)
+=== RUN   TestReceiveIncompleteFrameMustWaitForWireBytes
+    receive_hol_experiment_test.go:286: both application readers ready; only releasing missing wire bytes restores DATA/FIN delivery
+--- PASS: TestReceiveIncompleteFrameMustWaitForWireBytes (0.10s)
+=== RUN   TestReceiveBlockedReaderSessionCancellation
+--- PASS: TestReceiveBlockedReaderSessionCancellation (0.00s)
+FAIL
+FAIL	github.com/metacubex/mihomo/transport/anytls/session	0.231s
+FAIL
