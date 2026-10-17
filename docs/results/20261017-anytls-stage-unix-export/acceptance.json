@@ -90,6 +90,7 @@
     "full listener-package race, real 60-second deadline and off performance ABBA not repeated in this task",
     "all stage metrics are diagnostic and cumulative, not a business failure rate",
     "existing native shared logging can still block; only this stage feature bypasses shared logging",
-    "one cached snapshot and fixed observation population are incomplete by design; gaps, lost events and inactive state are unknown coverage"
+    "one cached snapshot and fixed observation population are incomplete by design; gaps, lost events and inactive state are unknown coverage",
+    "consumer fixture timeout is per socket I/O, not a whole-request absolute deadline; production collector integration must enforce the latter"
   ]
 }

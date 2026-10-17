@@ -219,7 +219,11 @@ class StageConsumer:
 
 
 def poll_unix(path, key, scope, state, timeout=1.0):
-    """A single bounded read, Unix only. The integration owns its 10s schedule."""
+    """Unix-only, byte-bounded read with a socket I/O timeout.
+
+    This timeout is not a total request deadline. The collector integration must
+    enforce its absolute scheduling budget; this fixture is not installed.
+    """
     conn = http.client.HTTPConnection('localhost', timeout=timeout)
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     sock.settimeout(timeout)
