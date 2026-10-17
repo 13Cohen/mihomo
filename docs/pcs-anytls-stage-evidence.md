@@ -41,7 +41,28 @@ The sample consumer in `docs/experiments/anytls_stage_consumer.py` is an isolate
 
 ## Acceptance and remaining release gates
 
-**Decision: HOLD.** Functional and relevant race checks pass, but the default-off microbenchmark regresses. This branch is ready for review, not release or production enablement.
+**Decision: HOLD for the remaining integration and enabled-cost gates.** The 2026-10-17 revision removes the large default-off regression in the measured write case. Functional and relevant race checks pass. This branch is ready for further integration review, not production enablement.
+
+### 2026-10-17 nil fast path
+
+The disabled writer no longer creates a `stageWriteOp`, calls observation methods, or registers an observation completion defer. The opt-in entry owns that work. Both entries acquire the same writer mutex and call one shared padding/deadline implementation, so the protocol body is not duplicated. Every disabled transport write directly calls the original connection. Disabled read and pipe wrappers directly perform their original I/O. Enabled observation semantics, authentication gating, capacity limits, and private association fields are unchanged.
+
+The isolated verification ran **2026-10-17 09:45:57.520593541–09:48:16.758987482 UTC** with the same Go 1.25.6, single Go worker, 0.35 CPU and 512 MiB limit, no external network, and shared dependency/build caches. Full session race passed in 34.050 s, including verified TLS, padding/frame integrity, A1 writes/cancellation, and the bounded stage tests. The actual listener default-off/authentication gate passed in 10.024 s. The fixture runs in a network-isolated container; it is not a production probe.
+
+The identical 16 KiB write benchmark was run against released `61f2efa` in ABBA order, five 500 ms measurements per group:
+
+| Variant | All-sample median | Delta from released base | Allocation |
+| --- | ---: | ---: | ---: |
+| Released `61f2efa` | 2642 ns/op | — | 64 B / 1 allocation |
+| Fast-path prototype, default off | 2710 ns/op | +68 ns / +2.57% | 64 B / 1 allocation |
+
+Group medians were 2646, 2547, 2717, and 2621 ns/op respectively. All twenty measurements are retained in `docs/results/20261017-anytls-stage-fastpath/acceptance.json`. This is a limited CPU-quota microbenchmark, not a zero-overhead guarantee, whole-server cost measurement, or demonstrated network speed improvement. The earlier +25.42% result below remains historical evidence from a different run; these figures are not a direct simultaneous old-prototype/new-prototype comparison. No broader performance load was repeated.
+
+The real 60-second dead-peer test and full listener-package race were not repeated; the existing boundaries below still apply. The shared logger risk, diagnostic consumer integration, full tagged runtime validation and enabled population/log-volume budget remain release gates. No current production configuration or binary was changed.
+
+### 2026-10-15 initial prototype result
+
+The original prototype was held specifically for its default-off cost regression; its measurements remain below for traceability.
 
 The final isolated window was **2026-10-15 19:06:46.018640449–19:11:26.195246311 UTC**, with Go 1.25.6, `GOMAXPROCS=1`, 0.35 CPU, 512 MiB RAM, 1024 MiB RAM+swap, and no external network. Full session race tests passed in 34.174 s; the real listener authentication gate passed in 10.024 s. Three Python consumer tests and the existing collector's socket-cookie association passed. An earlier initial window timed out during listener dependency compilation after its session tests passed; that entire window is explicitly not recorded as a pass. All windows and individual benchmark samples are retained in the result artifact.
 
@@ -52,7 +73,7 @@ The same 16 KiB DATA-to-discard connection fixture was run in ABBA order (releas
 | Released `61f2efa` | 2932.5 ns/op | — | 64 B / 1 allocation |
 | Prototype, default off | 3678.0 ns/op | +745.5 ns / +25.42% | 64 B / 1 allocation |
 
-This is an in-memory write microbenchmark under CPU quota, not TLS or public-network throughput. It identifies a cost concern rather than a measured user-speed regression. The separate enabled inner-loop comparison had medians 3406 ns/op off and 5032 ns/op on; it excludes periodic JSON and log-sink work. The next narrow implementation task is to reduce nil-path function/defer overhead and rerun the same comparison. No attempt is made to turn the current result into a passing cost conclusion.
+This was an in-memory write microbenchmark under CPU quota, not TLS or public-network throughput. It identified a cost concern rather than a measured user-speed regression. The separate enabled inner-loop comparison had medians 3406 ns/op off and 5032 ns/op on; it excludes periodic JSON and log-sink work. The subsequent nil-path revision and new comparison are recorded above; this original result has not been relabeled as a pass.
 
 The checked-in tests cover verified TLS 1.2/1.3 with normal padding, a paced DATA writer plus queued FIN, exact resulting DATA/FIN bytes, incomplete frame body versus full-frame pipe wait, completion maxima and slow events, actual slow-event timestamps, delayed-ticker capture times, export queue age, authenticated listener enablement/default-off/bad credentials, cookie availability, registry/waiter overflow, generation reuse, explicit unknown state after close, blocked exporter, concurrent snapshot/admission, and diagnostic consumer privacy/classification.
 

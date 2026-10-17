@@ -409,12 +409,27 @@ func (s *Session) writeControlFrame(frame frame) (int, error) {
 }
 
 func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err error) {
+	if s.evidence != nil {
+		return s.writeConnEvidence(b, writeTimeout)
+	}
+	s.connLock.Lock()
+	defer s.connLock.Unlock()
+	return s.writeConnLocked(b, writeTimeout, nil)
+}
+
+// Only the opt-in path creates an observation or its completion defer. Both
+// paths use the same locked padding/deadline implementation below.
+func (s *Session) writeConnEvidence(b []byte, writeTimeout time.Duration) (n int, err error) {
 	op := s.evidence.beginWrite(b[0], len(b))
 	s.connLock.Lock()
 	defer s.connLock.Unlock()
 	s.evidence.acquire(&op)
 	defer func() { s.evidence.finishWrite(&op, err) }()
+	return s.writeConnLocked(b, writeTimeout, &op)
+}
 
+// Caller owns connLock. A nil op takes the original conn.Write path directly.
+func (s *Session) writeConnLocked(b []byte, writeTimeout time.Duration, op *stageWriteOp) (n int, err error) {
 	if s.buffering {
 		s.buffer = append(s.buffer, b...)
 		return len(b), nil
@@ -445,7 +460,11 @@ func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err er
 					}
 				}
 				if remainPayloadLen > l { // this packet is all payload
-					_, err = s.evidence.write(&op, s.conn, b[:l])
+					if op == nil {
+						_, err = s.conn.Write(b[:l])
+					} else {
+						_, err = s.evidence.write(op, s.conn, b[:l])
+					}
 					if err != nil {
 						return 0, err
 					}
@@ -460,7 +479,11 @@ func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err er
 						binary.BigEndian.PutUint16(padding[5:7], uint16(paddingLen))
 						b = append(b, padding...)
 					}
-					_, err = s.evidence.write(&op, s.conn, b)
+					if op == nil {
+						_, err = s.conn.Write(b)
+					} else {
+						_, err = s.evidence.write(op, s.conn, b)
+					}
 					if err != nil {
 						return 0, err
 					}
@@ -471,7 +494,11 @@ func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err er
 					padding[0] = cmdWaste
 					binary.BigEndian.PutUint32(padding[1:5], 0)
 					binary.BigEndian.PutUint16(padding[5:7], uint16(l))
-					_, err = s.evidence.write(&op, s.conn, padding)
+					if op == nil {
+						_, err = s.conn.Write(padding)
+					} else {
+						_, err = s.evidence.write(op, s.conn, padding)
+					}
 					if err != nil {
 						return 0, err
 					}
@@ -482,7 +509,12 @@ func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err er
 			if len(b) == 0 {
 				return
 			} else {
-				n2, err := s.evidence.write(&op, s.conn, b)
+				var n2 int
+				if op == nil {
+					n2, err = s.conn.Write(b)
+				} else {
+					n2, err = s.evidence.write(op, s.conn, b)
+				}
 				return n + n2, err
 			}
 		} else {
@@ -490,5 +522,8 @@ func (s *Session) writeConn(b []byte, writeTimeout time.Duration) (n int, err er
 		}
 	}
 
-	return s.evidence.write(&op, s.conn, b)
+	if op == nil {
+		return s.conn.Write(b)
+	}
+	return s.evidence.write(op, s.conn, b)
 }

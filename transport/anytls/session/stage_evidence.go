@@ -490,12 +490,18 @@ func (e *stageHandle) finishRead(op stageReadOp, err error) {
 	s.mu.Unlock()
 }
 func (s *Session) readEvidence(b []byte, stage int, command byte) (int, error) {
+	if s.evidence == nil {
+		return io.ReadFull(s.conn, b)
+	}
 	op := s.evidence.beginRead(stage, command, len(b))
 	n, err := io.ReadFull(s.conn, b)
 	s.evidence.finishRead(op, err)
 	return n, err
 }
 func (s *Session) pipeEvidence(stream *Stream, b []byte) (int, error) {
+	if s.evidence == nil {
+		return stream.pipeW.Write(b)
+	}
 	op := s.evidence.beginRead(stagePipeWrite, cmdPSH, len(b))
 	n, err := stream.pipeW.Write(b)
 	s.evidence.finishRead(op, err)

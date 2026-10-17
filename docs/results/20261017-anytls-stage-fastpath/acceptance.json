@@ -1,0 +1,165 @@
+{
+  "base": "61f2efa50563367ee5662b31e0e3ed26cf6a3988",
+  "prototype_parent": "bfcd521dcab775eadf0030e38861e5a8fb7f3cfc",
+  "utc": [
+    "2026-10-17T09:45:57.520593541Z",
+    "2026-10-17T09:48:16.758987482Z"
+  ],
+  "exit": 0,
+  "environment": {
+    "go": "1.25.6",
+    "gomaxprocs": 1,
+    "cpu_limit": 0.35,
+    "memory_mib": 512,
+    "memory_plus_swap_mib": 1024,
+    "network": "none, fixture loopback only",
+    "fixture": "same 16384-byte in-memory DATA write; 5 x 500ms/group; ABBA"
+  },
+  "full_session_race_seconds": 34.05,
+  "real_listener_auth_gate_seconds": 10.024,
+  "groups": [
+    {
+      "group": "base1",
+      "samples": [
+        {
+          "ns_per_op": 2646.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2787.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2720.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2499.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2638.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        }
+      ],
+      "median_ns": 2646.0
+    },
+    {
+      "group": "candidate1",
+      "samples": [
+        {
+          "ns_per_op": 2894.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2745.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2535.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2547.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2508.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        }
+      ],
+      "median_ns": 2547.0
+    },
+    {
+      "group": "candidate2",
+      "samples": [
+        {
+          "ns_per_op": 2703.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 3168.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2695.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2717.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2740.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        }
+      ],
+      "median_ns": 2717.0
+    },
+    {
+      "group": "base2",
+      "samples": [
+        {
+          "ns_per_op": 2621.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2621.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2781.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2482.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        },
+        {
+          "ns_per_op": 2647.0,
+          "bytes_per_op": 64,
+          "allocations_per_op": 1
+        }
+      ],
+      "median_ns": 2621.0
+    }
+  ],
+  "baseline_median_ns": 2642.0,
+  "candidate_off_median_ns": 2710.0,
+  "absolute_delta_ns": 68.0,
+  "relative_delta_percent": 2.5738077214231714,
+  "allocations_unchanged": true,
+  "limitations": [
+    "Wall-clock microbenchmarks under CPU quota, not TLS/network speed.",
+    "Not a whole-server enabled observation/logging cost test.",
+    "No production deployment; shared logger, consumer, full tagged runtime and population/log-budget gates remain."
+  ],
+  "status": "functional/race PASS; default-off measured delta +2.57%; HOLD pending integration/enabled-cost gates",
+  "source_file_sha256": {
+    "transport/anytls/session/session.go": "eb9b49b7bbd7771c0d0bf2b3fefec32a2c85514a76ebee6004863aa2d5eba756",
+    "transport/anytls/session/stage_evidence.go": "3576542f4e8d87c0f81070977af5b963da7a4945819666a2a4d36b506beb9949"
+  },
+  "common_fixture_sha256": "be40890dc079e0b42fe753bb88139926a4eac5707142872d745357cb7bf91817",
+  "full_listener_race": "not run",
+  "real_60_second_dead_peer": "not repeated, unchanged A1 budget",
+  "production_deployed": false
+}
