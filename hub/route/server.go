@@ -276,7 +276,7 @@ func startUnix(cfg *Config) {
 		log.Infoln("RESTful API unix listening at: %s", l.Addr().String())
 
 		server := &http.Server{
-			Handler: router(cfg.IsDebug, "", cfg.DohServer, cfg.Cors),
+			Handler: unixRouter(cfg.IsDebug, cfg.DohServer, cfg.Cors),
 		}
 		unixServer = server
 		if err = server.Serve(l); err != nil {

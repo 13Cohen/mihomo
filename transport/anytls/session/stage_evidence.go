@@ -6,15 +6,12 @@ package session
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"encoding/json"
 	"io"
 	"net"
 	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"github.com/metacubex/mihomo/log"
 )
 
 const evidenceSessions = 32
@@ -73,12 +70,16 @@ type stageSlowEvent struct {
 type stageBatch struct {
 	Schema          int                        `json:"schema"`
 	Kind            string                     `json:"kind"`
+	EvidenceEpoch   string                     `json:"evidence_epoch"`
+	Sequence        uint64                     `json:"sequence"`
 	CaptureStarted  string                     `json:"capture_started"`
 	CaptureEnded    string                     `json:"capture_ended"`
 	Time            string                     `json:"time"`
 	ExportAgeMS     float64                    `json:"export_age_ms"`
 	Captured        time.Time                  `json:"-"`
 	PayloadLimited  bool                       `json:"payload_limited"`
+	OmittedSessions int                        `json:"omitted_sessions"`
+	OmittedSlow     int                        `json:"omitted_slow_events"`
 	StageNames      [evidenceStageCount]string `json:"metric_stage_names"`
 	Admission       string                     `json:"admission_policy"`
 	Live            int64                      `json:"live_authenticated_sessions"`
@@ -126,6 +127,9 @@ type stageHub struct {
 	lostBatches     atomic.Uint64
 	lostSlow        atomic.Uint64
 	lostTerminal    atomic.Uint64
+	sequence        atomic.Uint64
+	failedExports   atomic.Uint64
+	latest          atomic.Pointer[stagePublication]
 	terminal        [evidenceSessions]stageSnapshot
 	terminalN       int
 	slow            chan stageSlowEvent
@@ -155,7 +159,7 @@ type stageReadOp struct {
 }
 
 var serverStageOnce sync.Once
-var serverStageHub *stageHub
+var serverStageHub atomic.Pointer[stageHub]
 
 func newStageHub() *stageHub {
 	var nonce [8]byte
@@ -172,26 +176,17 @@ func (s *Session) EnableServerStageEvidence(cookie *string) bool {
 		return false
 	}
 	serverStageOnce.Do(func() {
-		serverStageHub = newStageHub()
-		if serverStageHub != nil {
-			serverStageHub.start(func(b stageBatch) {
-				raw, err := json.Marshal(b)
-				if len(raw) > 64*1024 {
-					b.PayloadLimited = true
-					b.Sessions = nil
-					b.SlowEvents = nil
-					raw, err = json.Marshal(b)
-				}
-				if err == nil {
-					log.Warnln("[AnyTLS EVIDENCE] %s", raw)
-				}
-			})
+		h := newStageHub()
+		if h != nil {
+			serverStageHub.Store(h)
+			h.start(h.publish)
 		}
 	})
-	if serverStageHub == nil {
+	h := serverStageHub.Load()
+	if h == nil {
 		return false
 	}
-	s.evidence = serverStageHub.attach(cookie)
+	s.evidence = h.attach(cookie)
 	return true
 }
 func (h *stageHub) start(sink func(stageBatch)) {
@@ -215,9 +210,6 @@ func (h *stageHub) start(sink func(stageBatch)) {
 				return
 			case now := <-ticker.C:
 				b := h.collect(now)
-				if b.Live == 0 && len(b.Sessions) == 0 && len(b.SlowEvents) == 0 {
-					continue
-				}
 				select {
 				case h.batches <- b:
 				default:
@@ -562,7 +554,7 @@ func (h *stageHub) collect(_ time.Time) (b stageBatch) {
 		b.Time = b.CaptureEnded
 		b.Captured = ended
 	}()
-	b = stageBatch{Schema: 1, Kind: "diagnostic_not_failure", StageNames: evidenceStageNames, Admission: "bounded_rotation_on_auth_not_population_sample", Evicted: h.evicted.Load(), LostCompletions: h.lostCompletions.Load(), LostBatches: h.lostBatches.Load(), LostSlow: h.lostSlow.Load(), LostTerminal: h.lostTerminal.Load()}
+	b = stageBatch{Schema: 1, Kind: "diagnostic_not_failure", EvidenceEpoch: h.nonce, Sequence: h.sequence.Add(1), StageNames: evidenceStageNames, Admission: "bounded_rotation_on_auth_not_population_sample", Evicted: h.evicted.Load(), LostCompletions: h.lostCompletions.Load(), LostBatches: h.lostBatches.Load(), LostSlow: h.lostSlow.Load(), LostTerminal: h.lostTerminal.Load()}
 	h.mu.Lock()
 	b.Live = h.live.Load()
 	b.Sessions = append(b.Sessions, h.terminal[:h.terminalN]...)
